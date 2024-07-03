@@ -22,20 +22,23 @@ type jHistory struct {
 func (c *jHistory) History() (*History, error) {
 	var err error
 	history := &History{}
-
-	history.Clock, err = strconv.Atoi(c.Clock)
-	if err != nil {
-		return nil, fmt.Errorf("Error parsing History Clock: %v", err)
+	if c.Clock != "" {
+		history.Clock, err = strconv.Atoi(c.Clock)
+		if err != nil {
+			return nil, fmt.Errorf("Error parsing History Clock: %v", err)
+		}
 	}
-
-	history.ItemID, err = strconv.Atoi(c.ItemID)
-	if err != nil {
-		return nil, fmt.Errorf("Error parsing History ItemID: %v", err)
+	if c.ItemID != "" {
+		history.ItemID, err = strconv.Atoi(c.ItemID)
+		if err != nil {
+			return nil, fmt.Errorf("Error parsing History ItemID: %v", err)
+		}
 	}
-
-	history.Ns, err = strconv.Atoi(c.Ns)
-	if err != nil {
-		return nil, fmt.Errorf("Error parsing History Ns: %v", err)
+	if c.Ns != "" {
+		history.Ns, err = strconv.Atoi(c.Ns)
+		if err != nil {
+			return nil, fmt.Errorf("Error parsing History Ns: %v", err)
+		}
 	}
 
 	history.Value = c.Value
