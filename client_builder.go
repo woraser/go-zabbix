@@ -1,6 +1,10 @@
 package zabbix
 
-import "net/http"
+import (
+	"crypto/tls"
+	"crypto/x509"
+	"net/http"
+)
 
 // ClientBuilder is Zabbix API client builder
 type ClientBuilder struct {
@@ -66,6 +70,16 @@ func CreateClient(apiEndpoint string) *ClientBuilder {
 	return &ClientBuilder{
 		url:         apiEndpoint,
 		credentials: make(map[string]string),
-		client:      &http.Client{},
+		client: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+					VerifyPeerCertificate: func(rawCerts [][]byte, verifiedChains [][]*x509.Certificate) error {
+						//忽略证书验证错误
+						return nil
+					},
+				},
+			},
+		},
 	}
 }
