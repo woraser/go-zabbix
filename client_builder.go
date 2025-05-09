@@ -54,7 +54,10 @@ func (builder *ClientBuilder) Connect() (session *Session, err error) {
 	err = session.login(builder.credentials["username"], builder.credentials["password"])
 
 	if err != nil {
-		return nil, err
+		err = session.loginWithHighVersion(builder.credentials["username"], builder.credentials["password"])
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Try to cache session if any cache used

@@ -41,6 +41,9 @@ func NewSession(url string, username string, password string) (session *Session,
 	// create session
 	session = &Session{URL: url}
 	err = session.login(username, password)
+	if err != nil {
+		err = session.loginWithHighVersion(username, password)
+	}
 	return
 }
 
@@ -54,6 +57,32 @@ func (c *Session) login(username, password string) error {
 	// login to API
 	params := map[string]string{
 		"user":     username,
+		"password": password,
+	}
+
+	res, err := c.Do(NewRequest("user.login", params))
+	if err != nil {
+		return fmt.Errorf("Error logging in to Zabbix API: %v", err)
+	}
+
+	err = res.Bind(&c.Token)
+	if err != nil {
+		return fmt.Errorf("Error failed to decode Zabbix login response: %v", err)
+	}
+
+	return nil
+}
+
+func (c *Session) loginWithHighVersion(username, password string) error {
+	// get Zabbix API version
+	_, err := c.GetVersion()
+	if err != nil {
+		return fmt.Errorf("Failed to retrieve Zabbix API version: %v", err)
+	}
+
+	// login to API
+	params := map[string]string{
+		"username": username,
 		"password": password,
 	}
 
